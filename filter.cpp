@@ -78,6 +78,42 @@ std::vector <double> filter(std::vector<double> b,
   }
 
 
+  // renormalize a and b to a[1]
+  if( a[0] != 1) {
+    for (int i=0; i < a.size(); i++) {
+      a[i] = a[i] / a[1];
+    }
+
+    for (int i=0; i< b.size(); i++) {
+      b[i] = b[i] / a[1];
+    }
+
+    a[1] = 1;
+  }
 
 
+  int bsum, asum;
+
+  for (int n=0; n < y.size(); n++) {
+    asum = 0;
+    bsum = 0;
+
+    for (int k = 1; k < a.size() - 1; k++) {
+      if ((n - k) < 0) {
+	continue;
+      }
+      asum += a[k+1] * y[n - k];
+    }
+
+    for (int k = 0; k < b.size() - 1; k++) {
+      if ((n - k) < 0) {
+	continue;
+      }
+      bsum += b[k+1] * x[n - k];
+    }
+
+    y[n] = bsum - asum;
+  }
+
+  return y;
 }
