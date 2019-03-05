@@ -7,6 +7,9 @@
  */
 
 #include <vector>
+#include <stdio.h>
+using namespace std;
+
 
 std::vector< double > filtic(std::vector<double> b,
 			     std::vector<double> a,
@@ -57,34 +60,35 @@ std::vector <double> filter(std::vector<double> b,
 			    std::vector<double> a,
 			    std::vector<double> x) {
 
-  int nz = (b.size() > a.size()) ? b.size() - 1 : a.size() - 1;
+  size_t nz = (b.size() > a.size()) ? b.size() - 1 : a.size() - 1;
+  printf("nz: %d as b: %d and a: %d\n", nz, b.size(), a.size());
   std::vector <double> y;
   y.reserve(x.size());
 
   // if necessary, pad lengths of a, b and x
-  int lena = a.size();
-  for (int i=lena; i<nz; i++) {
+  size_t lena = a.size();
+  for (size_t i=lena; i<nz; i++) {
     a[i] = 0;
   }
 
-  int lenb = b.size();
-  for (int i=lenb; i<nz; i++) {
+  size_t lenb = b.size();
+  for (size_t i=lenb; i<nz; i++) {
     b[i] = 0;
   }
 
-  int lenx = x.size();
-  for (int i=lenx; i<nz; i++) {
+  size_t lenx = x.size();
+  for (size_t i=lenx; i<nz; i++) {
     x[i] = 0;
   }
 
 
   // renormalize a and b to a[1]
   if( a[0] != 1) {
-    for (int i=0; i < a.size(); i++) {
+    for (size_t i=0; i < a.size(); i++) {
       a[i] = a[i] / a[1];
     }
 
-    for (int i=0; i< b.size(); i++) {
+    for (size_t i=0; i< b.size(); i++) {
       b[i] = b[i] / a[1];
     }
 
@@ -94,7 +98,7 @@ std::vector <double> filter(std::vector<double> b,
 
   int bsum, asum;
 
-  for (int n=0; n < y.size(); n++) {
+  for (int n=0; n < x.size(); n++) {
     asum = 0;
     bsum = 0;
 
@@ -112,8 +116,35 @@ std::vector <double> filter(std::vector<double> b,
       bsum += b[k+1] * x[n - k];
     }
 
-    y[n] = bsum - asum;
+    y.push_back(bsum - asum);
   }
 
   return y;
+}
+
+int main() {
+  vector<double> x, b, a;
+  x.reserve(100);
+  for(int i=0; i<100; i++) {
+    x.push_back(i);
+  }
+
+  b.reserve(1);
+  a.reserve(1);
+  b.push_back(1);
+  b.push_back(2);
+  a.push_back(1);
+  a.push_back(5);
+
+  vector <double> y = filter(b, a, x);
+
+
+
+  vector<double>::iterator it;
+  for(it=y.begin(); it != y.end(); it++) {
+    printf("%f\n", *it);
+  }
+
+
+  return 0;
 }
