@@ -16,7 +16,7 @@ int main() {
   a.push_back(1);
   a.push_back(5);
 
-  std::vector <double> y = filter(b, a, x);
+  std::vector <double> y = simple_filter(b, a, x);
 
 
 

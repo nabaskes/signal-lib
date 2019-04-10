@@ -7,7 +7,9 @@
  */
 
 #include <vector>
+#include <iterator>
 #include <stdio.h>
+
 
 
 std::vector< double > filtic(std::vector<double> b,
@@ -116,6 +118,37 @@ std::vector <double> filter(std::vector<double> b,
     }
 
     y.push_back(bsum - asum);
+  }
+
+  return y;
+}
+
+
+std::vector <double> simple_filter(std::vector <double> b,
+				   std::vector <double> a,
+				   std::vector <double> x) {
+  int nb = b.size();
+  int na = a.size();
+  int nz = (nb > na) ? nb : na;
+
+  std::vector<double> y;
+  y.reserve(x.size());
+
+  for (int k = 0; k < x.size(); k++) {
+    y.push_back(0);
+
+    for(int kb = 0; kb < b.size(); kb++) {
+      if ( (k - kb) >= 0) {
+	y[k] += b[kb] * x[k - kb];
+      }
+    }
+
+    for(int ka = 1; ka < a.size(); ka++) {
+      if ( (k - ka) >= 0) {
+	y[k] += a[ka] * y[k - ka];
+      }
+    }
+
   }
 
   return y;
