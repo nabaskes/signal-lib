@@ -6,6 +6,7 @@ performs discrete wavelet transform on the given
 #include <vector>
 #include <math.h>
 #include <iostream>
+#include <tuple>
 
 void dwt (std::vector<double>* arr) {
   int num_els = arr->size();
@@ -15,7 +16,6 @@ void dwt (std::vector<double>* arr) {
   for (int i=0; i<n; i++) {
     std::vector<double> temp_diffs;
     int num_steps = num_els / (2 * pow(2, i));
-    std::cout << "numsteps: " << num_steps << "\n";
     temp_diffs.reserve(num_steps);
 
     for (int k=0; k<num_steps; k++) {
@@ -31,11 +31,46 @@ void dwt (std::vector<double>* arr) {
   return;
 }
 
+void idwt(std::vector<double>* arr) {
+  int num_els = arr->size();
+  int n = (int) log2(num_els);
+
+  for(int i=0; i<n; i++) {
+    std::vector<std::tuple<double, double>> pairs;
+    int num_steps = num_els / (pow(2, n - i));
+    pairs.reserve(num_steps);
+    std::cout << "numsteps" <<  num_steps << "\n";
+
+    for(int k=0; k<num_steps; k++) {
+      double first = (*arr)[k] + (*arr)[k + num_steps];
+      double second = (*arr)[k] - (*arr)[k + num_steps];
+      pairs.push_back(std::make_tuple(first, second));
+    }
+
+
+    for(int k=0; k<num_steps; k++) {
+      (*arr)[2*k] = std::get<0>(pairs[k]);
+      (*arr)[2*k+1] = std::get<1>(pairs[k]);
+    }
+  }
+
+  return;
+}
+
 int main(){
   std::vector<double> arr {5.0, 1.0, 2.0, 8.0};
   dwt(&arr);
 
+
+
   for (auto i: arr) {
+    std::cout << (i) << "\n";
+  }
+
+  std::cout << "\n";
+  idwt(&arr);
+
+  for(auto i: arr) {
     std::cout << (i) << "\n";
   }
 
@@ -45,6 +80,14 @@ int main(){
   dwt(&arr2);
 
   for (auto i: arr2) {
+    std::cout << (i) << "\n";
+  }
+
+  std::cout << "\n";
+
+  idwt(&arr2);
+
+  for(auto i: arr2) {
     std::cout << (i) << "\n";
   }
 }
