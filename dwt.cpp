@@ -57,6 +57,31 @@ void idwt(std::vector<double>* arr) {
   return;
 }
 
+void dwt_2d(std::vector<std::vector<double>>* arr) {
+  int rows = arr->size();
+  int cols = (*arr)[0].size();
+  std::vector<double> T;
+  T.reserve(rows);
+
+  // first transform each row
+  for(int i=0; i<rows; i++) {
+    dwt(&((*arr)[i]));
+  }
+
+  for(int j=0; j<cols; j++) {
+    for(int i=0; i<rows; i++){
+      T[i] = (*arr)[i][j];
+    }
+
+    dwt(&T);
+
+    for(int i=0; i<rows; i++) {
+      (*arr)[i][j] = T[i];
+    }
+  }
+  return;
+}
+
 int main(){
   std::vector<double> arr {5.0, 1.0, 2.0, 8.0};
   dwt(&arr);
